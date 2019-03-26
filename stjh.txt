@@ -1,0 +1,157 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<malloc.h>
+#include<conio.h>
+#define INIT_SIZE 100
+#define INCREASE_SIZE 10
+#define status int
+#define ok 1
+#define error 0
+
+//定义队列结构体
+typedef struct QNode
+{
+	int data;
+	struct QNode *next;
+}QNode,*QueuePtr;
+typedef struct
+{
+	QueuePtr front;     //队头指针
+	QueuePtr rear;      //队尾指针
+}LinkQueue;
+
+//初始化队列
+status InitQueue(LinkQueue &Q)
+{
+	Q.front = Q.rear = (QNode*)malloc(sizeof(QNode));
+	if(!Q.front )
+		return error;
+	Q.front ->next =NULL;
+	return ok;
+}
+
+//销毁队列(删除之后对程序运行感觉没有影响)
+status DestoryQueue(LinkQueue &Q)
+{
+	while(Q.front )
+	{
+		Q.rear = Q.front ;
+		free(Q.front );
+		Q.front = Q.rear -> next;
+	}
+	return ok;
+}
+
+//队列尾插入元素
+status EnQueue(LinkQueue &Q,int e)
+{
+	QueuePtr p=(QueuePtr)malloc(sizeof(QNode));
+	if(!p)
+		return error;
+	p->next =NULL;
+	p->data =e;
+	Q.rear->next=p;
+	Q.rear =p;
+	return ok;
+}
+
+//取出队头元素
+status DeQueue(LinkQueue &Q,int &e)
+{
+	if(Q.front == Q.rear )
+		return error;
+	QueuePtr p=Q.rear->next ;
+	Q.front->next=p->next ;
+	e=p->data ;
+	if(Q.rear ==p)
+		Q.rear=Q.front ;
+	free(p);
+	return ok;
+}
+
+
+//选择菜单
+char menu()
+{
+	char i;
+	printf("请选择相应操作:\n");
+	printf("a.学生到达\n");
+	printf("n.下一名学生前来取餐\n");
+	printf("q.不再接收订单\n");
+	printf("m.退出\n");
+	i=_getch();
+	return i;
+}
+
+//预先插入一些数据到队列中
+void Insert(LinkQueue &Q)
+{
+	int i,a;
+	for(i=1;i<4;i++)
+	{
+		a=EnQueue(Q,i);
+		if(a==0)
+			exit(0);
+	}
+}
+
+//显示Q中的数据
+void Display(LinkQueue Q)
+{
+	QueuePtr p;
+	p = Q.front ->next ;
+	printf("现有排队等餐者:");
+	while(p!=NULL)
+	{
+		printf("%d号",p->data );
+		p=p->next ;
+	}
+	printf("\n");
+}
+int main()
+{
+	int a,b=3,c,i=1;
+	LinkQueue Q;
+	a = InitQueue(Q);
+	if(a==0)
+		return error;
+	Insert(Q);
+	Display(Q);
+	char ch;
+	while(1)
+	{
+		ch=menu();
+		switch(ch)
+		{
+			case'a':
+				b++;
+				a=EnQueue(Q,b);
+				if(a==0)
+				{
+					printf("出现错误");
+					exit(0);
+				}
+				Display(Q);
+				break;
+			case'n':
+				a=DeQueue(Q,c);
+				if(a==0)
+				{
+					printf("出现错误");
+					exit(0);
+				}
+				printf("现在取餐的为%d号\n",c);
+				Display(Q);
+				break;
+			case'q':printf("不再接收订单\n");break;
+			case'm':
+				exit(0);
+			default:
+				printf("error,请重新输入！\n");
+		}
+	}
+	return 0;
+}
+
+
+
