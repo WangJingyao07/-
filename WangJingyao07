@@ -1,0 +1,13 @@
+//取出队头元素
+status DeQueue(LinkQueue &Q,int &e)
+{
+	if(Q.front == Q.rear )
+		return error;
+	QueuePtr p=Q.front->next ;
+	Q.front->next=p->next ;
+	e=p->data ;
+	if(Q.rear ==p)
+		Q.rear=Q.front ;
+	free(p);
+	return ok;
+}
